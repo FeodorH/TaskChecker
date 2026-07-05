@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: my-spring-app
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.example: DEBUG
