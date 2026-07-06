@@ -10,10 +10,9 @@ import java.time.LocalDateTime
 @Service
 @Transactional
 class TaskService(//TODO add DI!!!
-    val taskRepository: TaskRepository,
-    val taskMapper: TaskMapper = TaskMapper
+    val taskRepository: TaskRepository
 ) {
-    fun getAllTasks(): List<TaskResponse> = taskRepository.findAll().map { taskMapper.toResponse(it) }
+    fun getAllTasks(): List<TaskResponse> = taskRepository.findAll().map { TaskMapper.toResponse(it) }
 
     fun getAllThemes(): List<String> = taskRepository.findAllThemes()
 
@@ -57,7 +56,6 @@ class TaskService(//TODO add DI!!!
          result.author=task.author
          result.description=task.description
          result.isStarted=task.isStarted
-         result.updateAt= LocalDateTime.now()
          taskRepository.save(result)
      }else{
          throw EntityNotFoundException("Task with ID=$id not found")
