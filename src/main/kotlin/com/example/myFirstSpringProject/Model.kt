@@ -46,14 +46,14 @@ data class TaskEntity(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id:Long = 0,
     @Column(nullable = false, length = 50)
-    var title:String,
+    var title:String="",
     @Column(nullable = false, length = 50)
-    var theme:String,
+    var theme:String="",
     @Column(nullable = true, length = 50)
-    var author: String?,
+    var author: String?=null,
     @Column(nullable = false)
-    var description:String,
+    var description:String="",
     @Column(nullable = false)
-    var isStarted:Boolean,
+    var isStarted:Boolean=false,
     @UpdateTimestamp @Column(updatable = true)
     var updateAt: LocalDateTime = LocalDateTime.now())

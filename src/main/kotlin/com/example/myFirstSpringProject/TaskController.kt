@@ -71,9 +71,9 @@ class TaskController(
 
     @DeleteMapping("/{id}")
     fun deleteTaskById(@PathVariable(value = "id") id: Long) : ResponseEntity<Unit> {
-        try {
+        return try {
             taskService.deleteTask(id)
-            return  ResponseEntity.noContent().build()
+            ResponseEntity.noContent().build()
         } catch (e: EntityNotFoundException) {
             ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
         }
