@@ -5,6 +5,7 @@ import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
 import org.apache.coyote.Response
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 @Transactional
@@ -30,42 +31,38 @@ class TaskService(//TODO add DI!!!
 
     fun getTaskByTheme(theme: String) : List<Task> = taskRepository.findByTheme(theme).map{ TaskMapper.toTask(it)}
 
-    fun getTaskByAuthor(author: String) : List<Task> = taskRepository.findByAuthor(author).map{ TaskMapper.toTask(it)}
+    fun getTaskByAuthor(author: String?) : List<Task> = taskRepository.findByAuthor(author).map{ TaskMapper.toTask(it)}
 
     fun getStartedTasks() : List<Task> = taskRepository.findByIsStartedTrue().map{ TaskMapper.toTask(it)}
 
     fun postTask(
-        title: String,
-        theme: String,
-        author: String,
-        description: String,
-        isStarted: Boolean = false
+        task: Task
     ): TaskResponse {
-        if(taskRepository.existsByTitleAndThemeAndAuthorAndDescription(title, theme, author,description)){
+        if(taskRepository.existsByTitleAndThemeAndAuthorAndDescription(task.title, task.theme, task.author, task.description)){
             throw EntityExistsException("Task already exists")
         }
-        val task = Task(title, theme, author, description, isStarted)
         val entity = taskRepository.save(TaskMapper.toEntity(task))
         return TaskMapper.toResponse(entity)
     }
 
     fun putTaskById(
         id: Long,
-        title: String,
-        theme: String,
-        author: String,
-        description: String,
-        isStarted: Boolean = false
+        task: Task
     ): TaskResponse {
-        val result : TaskResponse
+        val result : TaskEntity
      if(taskRepository.existsById(id)){
-          result = TaskMapper.toResponse(taskRepository.saveById(
-             taskEntity = TaskMapper.toEntity(Task(title,theme,author,description,isStarted)),
-             id = id))
+         result = taskRepository.findById(id).get()
+         result.title=task.title
+         result.theme=task.theme
+         result.author=task.author
+         result.description=task.description
+         result.isStarted=task.isStarted
+         result.updateAt= LocalDateTime.now()
+         taskRepository.save(result)
      }else{
          throw EntityNotFoundException("Task with ID=$id not found")
      }
-        return result
+        return TaskMapper.toResponse(result)
     }
 
     fun deleteTask(id: Long) =

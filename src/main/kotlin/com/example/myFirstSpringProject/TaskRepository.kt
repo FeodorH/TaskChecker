@@ -13,13 +13,9 @@ interface TaskRepository : JpaRepository<TaskEntity, Long> {
 
     fun findByTheme(theme: String): List<TaskEntity>
 
-    fun findByAuthor(author: String): List<TaskEntity>
+    fun findByAuthor(author: String?): List<TaskEntity>
 
     fun findByIsStartedTrue(): List<TaskEntity>
-
-    fun save(taskEntity: TaskEntity): TaskEntity
-
-    fun saveById(taskEntity: TaskEntity, id: Long): TaskEntity
 
     fun existsByTitleAndThemeAndAuthorAndDescription(
         title: String,
