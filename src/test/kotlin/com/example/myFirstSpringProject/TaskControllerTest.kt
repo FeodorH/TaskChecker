@@ -16,7 +16,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @ExtendWith(MockKExtension::class)
-private class TaskControllerTest {
+class TaskControllerTest {
     @MockK
     lateinit var taskService: TaskService
     lateinit var taskController: TaskController

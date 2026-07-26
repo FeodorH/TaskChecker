@@ -3,6 +3,7 @@ package com.example.myFirstSpringProject
 import jakarta.persistence.EntityExistsException
 import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
+import org.apache.catalina.mapper.Mapper
 import org.apache.coyote.Response
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -17,13 +18,9 @@ class TaskService(
     fun getAllThemes(): List<String> = taskRepository.findAllThemes()
 
     fun getTaskById(id : Long) : TaskResponse {
-        val result : TaskResponse
-        if(taskRepository.existsById(id)){
-            result = TaskMapper.toResponse( taskRepository.findById(id).get())
-        }else{
-            throw EntityNotFoundException("Entity with id $id not found")
-        }
-        return result
+        val entity = taskRepository.findById(id)
+            .orElseThrow { EntityNotFoundException("Entity with id $id not found") }
+        return TaskMapper.toResponse(entity)
     }
 
     fun getTaskByTitle(title: String) : List<Task> = taskRepository.findByTitle(title).map{ TaskMapper.toTask(it)}
@@ -48,18 +45,18 @@ class TaskService(
         id: Long,
         task: Task
     ): TaskResponse {
-        val result : TaskEntity
-     if(taskRepository.existsById(id)){
-         result = taskRepository.findById(id).get()
-         result.title=task.title
-         result.theme=task.theme
-         result.author=task.author
-         result.description=task.description
-         result.isStarted=task.isStarted
-         taskRepository.save(result)
-     }else{
-         throw EntityNotFoundException("Task with ID=$id not found")
-     }
+        val result : TaskEntity = taskRepository.findById(id)
+            .orElseThrow { throw EntityNotFoundException("Task with ID=$id not found") }
+            .run{
+            this.title=task.title
+            this.theme=task.theme
+            this.author=task.author
+            this.description=task.description
+            this.isStarted=task.isStarted
+            this
+        }
+
+        taskRepository.save(result)
         return TaskMapper.toResponse(result)
     }
 
