@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 
 @Service
 @Transactional
-class TaskService(//TODO add DI!!!
+class TaskService(
     val taskRepository: TaskRepository
 ) {
     fun getAllTasks(): List<TaskResponse> = taskRepository.findAll().map { TaskMapper.toResponse(it) }
