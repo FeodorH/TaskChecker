@@ -1,4 +1,4 @@
-package com.example.myFirstSpringProject
+package com.example.myFirstSpringProject.security
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration

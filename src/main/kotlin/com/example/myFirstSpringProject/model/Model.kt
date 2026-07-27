@@ -1,4 +1,4 @@
-package com.example.myFirstSpringProject
+package com.example.myFirstSpringProject.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.persistence.Column

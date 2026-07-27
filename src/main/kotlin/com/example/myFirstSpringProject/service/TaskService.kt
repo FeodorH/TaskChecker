@@ -1,5 +1,9 @@
-package com.example.myFirstSpringProject
+package com.example.myFirstSpringProject.service
 
+import com.example.myFirstSpringProject.model.Task
+import com.example.myFirstSpringProject.model.TaskEntity
+import com.example.myFirstSpringProject.model.TaskResponse
+import com.example.myFirstSpringProject.repository.TaskRepository
 import jakarta.persistence.EntityExistsException
 import jakarta.persistence.EntityNotFoundException
 import jakarta.transaction.Transactional
