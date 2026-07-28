@@ -30,13 +30,8 @@ class TaskController(
     fun getAllThemes() : List<String> = taskService.getAllThemes()
 
     @GetMapping("/by-id")
-    fun getTasksById(@RequestParam(value = "id") id: Long) : ResponseEntity<TaskResponse>{
-        return try {
-            ResponseEntity.ok(taskService.getTaskById(id))
-        } catch (e: EntityNotFoundException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-        }
-    }
+    fun getTasksById(@RequestParam(value = "id") id: Long) : ResponseEntity<TaskResponse> =
+        ResponseEntity.ok(taskService.getTaskById(id))
 
     @GetMapping("/by-title")
     fun getTasksByTitle(@RequestParam(value = "title") title: String) : List<Task> =
@@ -45,41 +40,29 @@ class TaskController(
     @GetMapping("/by-theme")
     fun getTasksByTheme(@RequestParam(value = "theme") theme: String) : List<Task> =
         taskService.getTaskByTheme(theme)
+
     @GetMapping("/by-author")
     fun getTasksByAuthor(@RequestParam(value = "author") author: String?) : List<Task> =
         taskService.getTaskByAuthor(author)
+
     @GetMapping("/is-started")
     fun startedTasks() : List<Task> =
         taskService.getStartedTasks()
 
     @PostMapping
     fun postTask(@Valid @RequestBody task: Task) : ResponseEntity<TaskResponse> {
-            return try {
-                val result = taskService.postTask(task)
-                ResponseEntity.status(HttpStatus.CREATED).body(result)
-            } catch (e: EntityExistsException) {
-                ResponseEntity.status(HttpStatus.CONFLICT).body(null)
-            }
+        val result = taskService.postTask(task)
+        return ResponseEntity.status(HttpStatus.CREATED).body(result)
         }
 
     @PutMapping("/{id}")
     fun putFirstTask(@PathVariable id:Long,
-                     @Valid @RequestBody task: Task) : ResponseEntity<TaskResponse>{
-        return try {
-            ResponseEntity.ok(taskService.putTaskById(id,task))
-        } catch (e: EntityNotFoundException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-        }
-    }
+                     @Valid @RequestBody task: Task) : ResponseEntity<TaskResponse> =
+        ResponseEntity.ok(taskService.putTaskById(id,task))
 
     @DeleteMapping("/{id}")
     fun deleteTaskById(@PathVariable(value = "id") id: Long) : ResponseEntity<Unit> {
-        return try {
-            taskService.deleteTask(id)
-            ResponseEntity.noContent().build()
-        } catch (e: EntityNotFoundException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
-        }
+        taskService.deleteTask(id)
+        return ResponseEntity.noContent().build()
     }
-
 }
