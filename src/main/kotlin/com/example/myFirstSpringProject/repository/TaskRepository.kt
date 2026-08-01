@@ -7,8 +7,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface TaskRepository : JpaRepository<TaskEntity, Long> {
-    @Query("SELECT DISTINCT t.theme FROM TaskEntity t")
-    fun findAllThemes(): List<String>
 
     fun findByTitle(title: String): List<TaskEntity>
 
@@ -22,6 +20,6 @@ interface TaskRepository : JpaRepository<TaskEntity, Long> {
         title: String,
         theme: String,
         author: String?,
-        description: String
+        description: String?
     ): Boolean
 }

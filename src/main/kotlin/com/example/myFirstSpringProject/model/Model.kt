@@ -1,6 +1,5 @@
 package com.example.myFirstSpringProject.model
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -9,61 +8,15 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
-import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
 import java.time.LocalDateTime
 
-data class Task(
-    @field:NotBlank(message = "Title is required")
-    @field:Size(max = 50, message = "Title must be at most 50 characters")
-    val title: String,
-
-    @field:NotBlank(message = "Theme is required")
-    @field:Size(max = 50, message = "Theme must be at most 50 characters")
-    val theme: String,
-
-    @field:Size(max = 50, message = "Author must be at most 50 characters")
-    val author: String? = null,
-
-    @field:NotBlank(message = "Description is required")
-    val description: String,
-
-    val isStarted: Boolean = false
-)
-
-data class TaskResponse(
-    val id: Long,
-    val title: String,
-    val theme: String,
-    val author: String?,
-    val description: String,
-    val isStarted: Boolean,
-    val updateAt: LocalDateTime
-    )
-
-@Entity
-@Table(name = "tasks")
-data class TaskEntity(
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id:Long = 0,
-    @Column(nullable = false, length = 50)
-    var title:String="",
-    @Column(nullable = false, length = 50)
-    var theme:String="",
-    @Column(nullable = true, length = 50)
-    var author: String?=null,
-    @Column(nullable = false)
-    var description:String="",
-    @Column(nullable = false)
-    var isStarted:Boolean=false,
-    @UpdateTimestamp @Column(updatable = true)
-    var updateAt: LocalDateTime = LocalDateTime.now())
-
 data class ExceptionResponse(
     val title: String,
-    val message : String?,
-    val status : Int,
+    val message: String?,
+    val status: Int,
     val path: String,
-    val timestamp : Instant = Instant.now(),
-    val details: Map<String, String>? = null)
+    val timestamp: Instant = Instant.now(),
+    val details: Map<String, String>? = null
+)

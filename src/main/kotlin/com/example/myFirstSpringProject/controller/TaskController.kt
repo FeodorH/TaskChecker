@@ -1,10 +1,10 @@
 package com.example.myFirstSpringProject.controller
 
-import com.example.myFirstSpringProject.model.Task
+import com.example.myFirstSpringProject.model.TaskRequest
 import com.example.myFirstSpringProject.model.TaskResponse
+import com.example.myFirstSpringProject.model.ThemeRequest
+import com.example.myFirstSpringProject.model.ThemeResponse
 import com.example.myFirstSpringProject.service.TaskService
-import jakarta.persistence.EntityExistsException
-import jakarta.persistence.EntityNotFoundException
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -27,42 +27,68 @@ class TaskController(
     fun getAllTasks() : List<TaskResponse> = taskService.getAllTasks()
 
     @GetMapping(("/themes"))
-    fun getAllThemes() : List<String> = taskService.getAllThemes()
+    fun getAllThemes() : List<ThemeResponse> = taskService.getAllThemes()
 
     @GetMapping("/by-id")
     fun getTasksById(@RequestParam(value = "id") id: Long) : ResponseEntity<TaskResponse> =
         ResponseEntity.ok(taskService.getTaskById(id))
 
     @GetMapping("/by-title")
-    fun getTasksByTitle(@RequestParam(value = "title") title: String) : List<Task> =
+    fun getTasksByTitle(@RequestParam(value = "title") title: String) : List<TaskResponse> =
         taskService.getTaskByTitle(title)
 
     @GetMapping("/by-theme")
-    fun getTasksByTheme(@RequestParam(value = "theme") theme: String) : List<Task> =
+    fun getTasksByTheme(@RequestParam(value = "theme") theme: String) : List<TaskResponse> =
         taskService.getTaskByTheme(theme)
 
     @GetMapping("/by-author")
-    fun getTasksByAuthor(@RequestParam(value = "author") author: String?) : List<Task> =
+    fun getTasksByAuthor(@RequestParam(value = "author") author: String?) : List<TaskResponse> =
         taskService.getTaskByAuthor(author)
 
     @GetMapping("/is-started")
-    fun startedTasks() : List<Task> =
+    fun startedTasks() : List<TaskResponse> =
         taskService.getStartedTasks()
 
+    @GetMapping("/themes/by-id")
+    fun getThemeById(@RequestParam(value = "id") id: Long) : ResponseEntity<ThemeResponse> =
+        ResponseEntity<ThemeResponse>.ok(taskService.getThemeById(id))
+
+    @GetMapping("/themes/by-theme")
+    fun getThemeByTheme(@RequestParam(value = "theme") theme: String) : List<ThemeResponse> =
+        taskService.getThemeByTheme(theme)
+
     @PostMapping
-    fun postTask(@Valid @RequestBody task: Task) : ResponseEntity<TaskResponse> {
+    fun postTask(@Valid @RequestBody task: TaskRequest) : ResponseEntity<TaskResponse> {
         val result = taskService.postTask(task)
         return ResponseEntity.status(HttpStatus.CREATED).body(result)
         }
 
+    @PostMapping("/themes")
+    fun postTheme(@Valid @RequestBody theme: ThemeRequest) : ResponseEntity<ThemeResponse> {
+        val result = taskService.postTheme(theme)
+        return ResponseEntity.status(HttpStatus.CREATED).body(result)
+    }
+
     @PutMapping("/{id}")
     fun putFirstTask(@PathVariable id:Long,
-                     @Valid @RequestBody task: Task) : ResponseEntity<TaskResponse> =
+                     @Valid @RequestBody task: TaskRequest) : ResponseEntity<TaskResponse> =
         ResponseEntity.ok(taskService.putTaskById(id,task))
+
+    @PostMapping("/themes/{id}")
+    fun putTheme(@PathVariable id: Long,
+                 @Valid @RequestBody theme: ThemeRequest) : ResponseEntity<ThemeResponse> {
+        return ResponseEntity.ok(taskService.putThemeById(id,theme))
+    }
 
     @DeleteMapping("/{id}")
     fun deleteTaskById(@PathVariable(value = "id") id: Long) : ResponseEntity<Unit> {
-        taskService.deleteTask(id)
+        taskService.deleteTaskById(id)
+        return ResponseEntity.noContent().build()
+    }
+
+    @DeleteMapping("/themes/{id")
+    fun deleteThemeById(@PathVariable id: Long) : ResponseEntity<Unit> {
+        taskService.deleteThemeById(id)
         return ResponseEntity.noContent().build()
     }
 }
