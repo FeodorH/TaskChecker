@@ -10,15 +10,14 @@ interface TaskRepository : JpaRepository<TaskEntity, Long> {
 
     fun findByTitle(title: String): List<TaskEntity>
 
-    fun findByTheme(theme: String): List<TaskEntity>
+    fun findByTheme_ThemeTitle(theme: String): List<TaskEntity>
 
     fun findByAuthor(author: String?): List<TaskEntity>
 
     fun findByIsStartedTrue(): List<TaskEntity>
 
-    fun existsByTitleAndThemeAndAuthorAndDescription(
+    fun existsByTitleAndAuthorAndDescription(
         title: String,
-        theme: String,
         author: String?,
         description: String?
     ): Boolean

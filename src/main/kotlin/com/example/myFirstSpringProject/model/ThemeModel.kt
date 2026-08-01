@@ -14,13 +14,13 @@ import java.time.LocalDateTime
 data class ThemeRequest(
     @field:NotBlank(message = "Theme is required")
     @field:Size(max = 50, message = "Theme must be at most 50 characters")
-    val theme: String,
+    val themeTitle: String,
     val description: String?
 )
 
 data class ThemeResponse(
     val id: Long,
-    val theme: String,
+    val themeTitle: String,
     val description: String?,
     val updateAt: LocalDateTime
 )
@@ -30,8 +30,8 @@ data class ThemeResponse(
 data class ThemeEntity(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
-    @Column(nullable = false, length = 50)
-    var theme: String,
+    @Column(nullable = false, length = 50, unique = true)
+    var themeTitle: String = "",
     @Column()
     var description: String? = null,
     @UpdateTimestamp @Column(updatable = true)

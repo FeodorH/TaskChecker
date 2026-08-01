@@ -1,5 +1,8 @@
 package com.example.myFirstSpringProject
 
+import com.example.myFirstSpringProject.controller.TaskController
+import com.example.myFirstSpringProject.model.TaskResponse
+import com.example.myFirstSpringProject.service.TaskService
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
