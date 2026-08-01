@@ -21,7 +21,7 @@ class TaskService(
 
     fun getTaskById(id : Long) : TaskResponse {
         val entity = taskRepository.findById(id)
-            .orElseThrow { EntityNotFoundException("Task with id $id not found") }
+            .orElseThrow { EntityNotFoundException("Task with ID $id not found") }
         return TaskMapper.toTaskResponse(entity)
     }
 
@@ -61,9 +61,10 @@ class TaskService(
         task: TaskRequest
     ): TaskResponse {
         val existing = taskRepository.findById(id)
-            .orElseThrow{EntityNotFoundException("Task with id $id not found")}
+            .orElseThrow{EntityNotFoundException("Task with ID $id not found")}
+
         val theme = themeRepository.findByThemeTitle(task.theme)
-            ?: throw EntityNotFoundException("Theme not found")
+            ?: themeRepository.save(ThemeEntity(themeTitle = task.theme))
 
         existing.title = task.title
         existing.theme = theme

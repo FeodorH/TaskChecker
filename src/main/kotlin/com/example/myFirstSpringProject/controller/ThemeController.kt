@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -29,8 +30,8 @@ class ThemeController(
         ResponseEntity<ThemeResponse>.ok(themeService.getThemeById(id))
 
     @GetMapping("/by-themeTitle")
-    fun getThemeByThemeTitle(@RequestParam(value = "theme") theme: String) : ResponseEntity<ThemeResponse> =
-        ResponseEntity<ThemeResponse>.ok(themeService.getThemeByThemeTitle(theme))
+    fun getThemeByThemeTitle(@RequestParam(value = "themeTitle") themeTitle: String) : ResponseEntity<ThemeResponse> =
+        ResponseEntity<ThemeResponse>.ok(themeService.getThemeByThemeTitle(themeTitle))
 
     @PostMapping
     fun postTheme(@Valid @RequestBody theme: ThemeRequest) : ResponseEntity<ThemeResponse> {
@@ -38,7 +39,7 @@ class ThemeController(
         return ResponseEntity.status(HttpStatus.CREATED).body(result)
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     fun putTheme(@PathVariable id: Long,
                  @Valid @RequestBody theme: ThemeRequest) : ResponseEntity<ThemeResponse> {
         return ResponseEntity.ok(themeService.putThemeById(id,theme))

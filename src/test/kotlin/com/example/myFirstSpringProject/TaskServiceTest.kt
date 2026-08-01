@@ -1,5 +1,14 @@
 package com.example.myFirstSpringProject
 
+import com.example.myFirstSpringProject.model.TaskEntity
+import com.example.myFirstSpringProject.model.TaskRequest
+import com.example.myFirstSpringProject.model.TaskResponse
+import com.example.myFirstSpringProject.model.ThemeEntity
+import com.example.myFirstSpringProject.model.ThemeResponse
+import com.example.myFirstSpringProject.repository.TaskRepository
+import com.example.myFirstSpringProject.repository.ThemeRepository
+import com.example.myFirstSpringProject.service.TaskService
+import com.example.myFirstSpringProject.service.ThemeMapper
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -20,41 +29,37 @@ import kotlin.test.assertTrue
 class TaskServiceTest {
     @MockK
     lateinit var taskRepository: TaskRepository
+    @MockK
+    lateinit var themeRepository: ThemeRepository
     lateinit var taskService: TaskService
 
     val now = LocalDateTime.now()
 
     @BeforeEach
     fun setUp() {
-        taskService = TaskService(taskRepository)
+        taskService = TaskService(taskRepository, themeRepository)
     }
 
     @Test
     fun getAllTasksTest() {
-        val expected = listOf(
-            TaskResponse(1L, "Task1", "Theme1", "Author1", "Desc1", true, now),
-            TaskResponse(2L, "Task2", "Theme2", null, "Desc2", false, now)
-        )
+        val theme1 = ThemeEntity(id = 1, themeTitle = "Theme1", updateAt = now)
+        val theme2 = ThemeEntity(id = 2, themeTitle = "Theme2", updateAt = now)
 
         val entities = listOf(
             TaskEntity(
                 id = 1,
+                theme = theme1,
                 title = "Task1",
-                theme = "Theme1",
                 author = "Author1",
                 description = "Desc1",
                 isStarted = true,
                 updateAt = now
             ),
-            TaskEntity(
-                id = 2,
-                title = "Task2",
-                theme = "Theme2",
-                author = null,
-                description = "Desc2",
-                isStarted = false,
-                updateAt = now
-            )
+            TaskEntity(id = 2, theme = theme2, title = "Task2", author = null, description = "Desc2", isStarted = false, updateAt = now)
+        )
+        val expected = listOf(
+            TaskResponse(1, ThemeMapper.toThemeResponse(theme1), "Task1", "Author1", "Desc1", true, now),
+            TaskResponse(2, ThemeMapper.toThemeResponse(theme2), "Task2", null, "Desc2", false, now)
         )
         every { taskRepository.findAll() } returns entities
 
@@ -65,29 +70,11 @@ class TaskServiceTest {
     }
 
     @Test
-    fun getAllThemesTest() {
-        val expected = listOf("Theme1", "Theme2", "Theme3")
-        every { taskRepository.findAllThemes() } returns expected
-
-        val result = taskService.getAllThemes()
-
-        assertEquals(expected, result)
-        verify(exactly = 1) { taskRepository.findAllThemes() }
-    }
-
-    @Test
     fun getTaskByIdTest() {
         val id = 1L
-        val entity = TaskEntity(
-            id = 1L,
-            title = "Task1",
-            theme = "Theme1",
-            author = "Author1",
-            description = "Desc1",
-            isStarted = true,
-            updateAt = now
-        )
-        val expected = TaskResponse(1L, "Task1", "Theme1", "Author1", "Desc1", true, now)
+        val theme = ThemeEntity(id = 1, themeTitle = "Theme1", updateAt = now)
+        val entity = TaskEntity(id = 1, theme = theme, title = "Task1", author = "Author1", description = "Desc1", isStarted = true, updateAt = now)
+        val expected = TaskResponse(1, ThemeMapper.toThemeResponse(theme), "Task1", "Author1", "Desc1", true, now)
 
         every { taskRepository.findById(id) } returns Optional.of(entity)
 
@@ -106,27 +93,17 @@ class TaskServiceTest {
             taskService.getTaskById(id)
         }
 
-        assertEquals("Entity with id $id not found", exception.message)
+        assertEquals("Task with ID $id not found", exception.message)
         verify(exactly = 1) { taskRepository.findById(id) }
     }
 
     @Test
     fun getTaskByTitleTest() {
         val title = "Task1"
-        val entities = listOf(
-            TaskEntity(
-                id = 1,
-                title = title,
-                theme = "Theme1",
-                author = "Author1",
-                description = "Desc1",
-                isStarted = true,
-                updateAt = now
-            )
-        )
-        val expected = listOf(
-            Task(title = title, theme = "Theme1", author = "Author1", description = "Desc1", isStarted = true)
-        )
+        val theme = ThemeEntity(id = 1, themeTitle = "Theme1", updateAt = now)
+        val entities = listOf(TaskEntity(id = 1, theme = theme, title = title, author = "Author1", description = "Desc1", isStarted = true, updateAt = now))
+        val expected = listOf(TaskResponse(1, ThemeMapper.toThemeResponse(theme), title, "Author1", "Desc1", true, now))
+
         every { taskRepository.findByTitle(title) } returns entities
 
         val result = taskService.getTaskByTitle(title)
@@ -137,46 +114,26 @@ class TaskServiceTest {
 
     @Test
     fun getTaskByThemeTest() {
-        val theme = "Theme1"
-        val entities = listOf(
-            TaskEntity(
-                id = 1,
-                title = "Task1",
-                theme = theme,
-                author = "Author1",
-                description = "Desc1",
-                isStarted = false,
-                updateAt = now
-            )
-        )
-        val expected = listOf(
-            Task(title = "Task1", theme = theme, author = "Author1", description = "Desc1", isStarted = false)
-        )
-        every { taskRepository.findByTheme(theme) } returns entities
+        val themeName = "Theme1"
+        val theme = ThemeEntity(id = 1, themeTitle = themeName, updateAt = now)
+        val entities = listOf(TaskEntity(id = 1, theme = theme, title = "Task1", author = "Author1", description = "Desc1", isStarted = false, updateAt = now))
+        val expected = listOf(TaskResponse(1, ThemeMapper.toThemeResponse(theme), "Task1", "Author1", "Desc1", false, now))
 
-        val result = taskService.getTaskByTheme(theme)
+        every { taskRepository.findByTheme_ThemeTitle(themeName) } returns entities
+
+        val result = taskService.getTaskByTheme(themeName)
 
         assertEquals(expected, result)
-        verify(exactly = 1) { taskRepository.findByTheme(theme) }
+        verify(exactly = 1) { taskRepository.findByTheme_ThemeTitle(themeName) }
     }
 
     @Test
     fun getTaskByAuthorTest() {
         val author = "Author1"
-        val entities = listOf(
-            TaskEntity(
-                id = 1,
-                title = "Task1",
-                theme = "Theme1",
-                author = author,
-                description = "Desc1",
-                isStarted = true,
-                updateAt = now
-            )
-        )
-        val expected = listOf(
-            Task(title = "Task1", theme = "Theme1", author = author, description = "Desc1", isStarted = true)
-        )
+        val theme = ThemeEntity(id = 1, themeTitle = "Theme1", updateAt = now)
+        val entities = listOf(TaskEntity(id = 1, theme = theme, title = "Task1", author = author, description = "Desc1", isStarted = true, updateAt = now))
+        val expected = listOf(TaskResponse(1, ThemeMapper.toThemeResponse(theme), "Task1", author, "Desc1", true, now))
+
         every { taskRepository.findByAuthor(author) } returns entities
 
         val result = taskService.getTaskByAuthor(author)
@@ -198,20 +155,10 @@ class TaskServiceTest {
 
     @Test
     fun getStartedTasksTest() {
-        val entities = listOf(
-            TaskEntity(
-                id = 1,
-                title = "Task1",
-                theme = "Theme1",
-                author = "Author1",
-                description = "Desc1",
-                isStarted = true,
-                updateAt = now
-            )
-        )
-        val expected = listOf(
-            Task(title = "Task1", theme = "Theme1", author = "Author1", description = "Desc1", isStarted = true)
-        )
+        val theme = ThemeEntity(id = 1, themeTitle = "Theme1", updateAt = now)
+        val entities = listOf(TaskEntity(id = 1, theme = theme, title = "Task1", author = "Author1", description = "Desc1", isStarted = true, updateAt = now))
+        val expected = listOf(TaskResponse(1, ThemeMapper.toThemeResponse(theme), "Task1", "Author1", "Desc1", true, now))
+
         every { taskRepository.findByIsStartedTrue() } returns entities
 
         val result = taskService.getStartedTasks()
@@ -222,115 +169,75 @@ class TaskServiceTest {
 
     @Test
     fun postTaskTest() {
-        val task = Task("New Task", "Theme", "Author", "Desc", false)
-        val entity = TaskEntity(
-            id = 1,
-            title = "New Task",
-            theme = "Theme",
-            author = "Author",
-            description = "Desc",
-            isStarted = false,
-            updateAt = now
-        )
-        val expected = TaskResponse(1L, "New Task", "Theme", "Author", "Desc", false, now)
+        val request = TaskRequest("New Task", "New Theme", "Author", "Desc", false)
+        val themeEntity = ThemeEntity(id = 1, themeTitle = "New Theme", updateAt = now)
+        val taskEntity = TaskEntity(id = 1, theme = themeEntity, title = "New Task", author = "Author", description = "Desc", isStarted = false, updateAt = now)
+        val expected = TaskResponse(1, ThemeMapper.toThemeResponse(themeEntity), "New Task", "Author", "Desc", false, now)
 
-        every {
-            taskRepository.existsByTitleAndThemeAndAuthorAndDescription(
-                task.title,
-                task.theme,
-                task.author,
-                task.description
-            )
-        } returns false
-        every { taskRepository.save(any()) } returns entity
+        every { taskRepository.existsByTitleAndAuthorAndDescription(request.title, request.author, request.description) } returns false
+        every { themeRepository.findByThemeTitle(request.theme) } returns null
+        every { themeRepository.save(any()) } returns themeEntity
+        every { taskRepository.save(any()) } returns taskEntity
 
-        val result = taskService.postTask(task)
+        val result = taskService.postTask(request)
 
         assertEquals(expected, result)
-        verify(exactly = 1) {
-            taskRepository.existsByTitleAndThemeAndAuthorAndDescription(
-                task.title,
-                task.theme,
-                task.author,
-                task.description
-            )
-        }
+        verify(exactly = 1) { taskRepository.existsByTitleAndAuthorAndDescription(request.title, request.author, request.description) }
+        verify(exactly = 1) { themeRepository.findByThemeTitle(request.theme) }
+        verify(exactly = 1) { themeRepository.save(any()) }
         verify(exactly = 1) { taskRepository.save(any()) }
     }
 
     @Test
     fun postTaskAlreadyExistsTest() {
-        val task = Task("Existing", "Theme", "Author", "Desc", false)
-        every {
-            taskRepository.existsByTitleAndThemeAndAuthorAndDescription(
-                task.title,
-                task.theme,
-                task.author,
-                task.description
-            )
-        } returns true
+        val request = TaskRequest("Existing", "Theme", "Author", "Desc", false)
+        every { taskRepository.existsByTitleAndAuthorAndDescription(request.title, request.author, request.description) } returns true
 
         val exception = assertThrows<EntityExistsException> {
-            taskService.postTask(task)
+            taskService.postTask(request)
         }
 
         assertEquals("Task already exists", exception.message)
-        verify(exactly = 1) {
-            taskRepository.existsByTitleAndThemeAndAuthorAndDescription(
-                task.title,
-                task.theme,
-                task.author,
-                task.description
-            )
-        }
+        verify(exactly = 1) { taskRepository.existsByTitleAndAuthorAndDescription(request.title, request.author, request.description) }
+        verify(exactly = 0) { themeRepository.findByThemeTitle(any()) }
         verify(exactly = 0) { taskRepository.save(any()) }
     }
 
     @Test
     fun putTaskByIdTest() {
         val id = 1L
-        val task = Task("Updated", "Theme", "Author", "Desc", true)
-        val existing = TaskEntity(
-            id = 1,
-            title = "Old",
-            theme = "Theme",
-            author = "Author",
-            description = "Old Desc",
-            isStarted = false,
-            updateAt = now
-        )
-        val updated = TaskEntity(
-            id = 1,
-            title = "Updated",
-            theme = "Theme",
-            author = "Author",
-            description = "Desc",
-            isStarted = true,
-            updateAt = now
-        )
-        val expected = TaskResponse(1L, "Updated", "Theme", "Author", "Desc", true, now)
+        val request = TaskRequest("Updated", "New Theme", "Author", "Desc", true)
+        val existingTheme = ThemeEntity(id = 1, themeTitle = "Old Theme", updateAt = now)
+        val newTheme = ThemeEntity(id = 2, themeTitle = "New Theme", updateAt = now)
+        val existingTask = TaskEntity(id = id, theme = existingTheme, title = "Old", author = "Author", description = "Old Desc", isStarted = false, updateAt = now)
+        val updatedTask = TaskEntity(id = id, theme = newTheme, title = "Updated", author = "Author", description = "Desc", isStarted = true, updateAt = now)
+        val expected = TaskResponse(id, ThemeMapper.toThemeResponse(newTheme), "Updated", "Author", "Desc", true, now)
 
-        every { taskRepository.findById(id) } returns Optional.of(existing)
-        every { taskRepository.save(any()) } returns updated
+        every { taskRepository.findById(id) } returns Optional.of(existingTask)
+        every { themeRepository.findByThemeTitle(request.theme) } returns null
+        every { themeRepository.save(any()) } returns newTheme
+        every { taskRepository.save(any()) } returns updatedTask
 
-        val result = taskService.putTaskById(id, task)
+        val result = taskService.putTaskById(id, request)
 
         assertEquals(expected, result)
         verify(exactly = 1) { taskRepository.findById(id) }
+        verify(exactly = 1) { themeRepository.findByThemeTitle(request.theme) }
+        verify(exactly = 1) { themeRepository.save(any()) }
         verify(exactly = 1) { taskRepository.save(any()) }
     }
 
     @Test
     fun putTaskByIdErrorTest() {
         val id = 999L
-        val task = Task("Updated", "Theme", "Author", "Desc", true)
+        val request = TaskRequest("Updated", "Theme", "Author", "Desc", true)
         every { taskRepository.findById(id) } returns Optional.empty()
 
         val exception = assertThrows<EntityNotFoundException> {
-            taskService.putTaskById(id, task)
+            taskService.putTaskById(id, request)
         }
 
-        assertEquals("Task with ID=$id not found", exception.message)
+        assertEquals("Task with ID $id not found", exception.message)
         verify(exactly = 1) { taskRepository.findById(id) }
         verify(exactly = 0) { taskRepository.save(any()) }
     }
@@ -341,7 +248,7 @@ class TaskServiceTest {
         every { taskRepository.existsById(id) } returns true
         every { taskRepository.deleteById(id) } returns Unit
 
-        taskService.deleteTask(id)
+        taskService.deleteTaskById(id)
 
         verify(exactly = 1) { taskRepository.existsById(id) }
         verify(exactly = 1) { taskRepository.deleteById(id) }
@@ -353,7 +260,7 @@ class TaskServiceTest {
         every { taskRepository.existsById(id) } returns false
 
         val exception = assertThrows<EntityNotFoundException> {
-            taskService.deleteTask(id)
+            taskService.deleteTaskById(id)
         }
 
         assertEquals("Task with ID $id not found", exception.message)

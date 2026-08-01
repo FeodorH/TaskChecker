@@ -1,7 +1,9 @@
 package com.example.myFirstSpringProject
 
 import com.example.myFirstSpringProject.controller.TaskController
+import com.example.myFirstSpringProject.model.TaskRequest
 import com.example.myFirstSpringProject.model.TaskResponse
+import com.example.myFirstSpringProject.model.ThemeResponse
 import com.example.myFirstSpringProject.service.TaskService
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -10,6 +12,7 @@ import io.mockk.verify
 import jakarta.persistence.EntityExistsException
 import jakarta.persistence.EntityNotFoundException
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -31,36 +34,30 @@ class TaskControllerTest {
 
     @Test
     fun getAllTasksTest() {
+        val now = LocalDateTime.now()
+        val theme1 = ThemeResponse(1, "Theme1", null, now)
+        val theme2 = ThemeResponse(2, "Theme2", null, now)
         val expectedTasks = listOf(
-            TaskResponse(1L, "Task1", "Theme1", "Author1", "Desc1", true, LocalDateTime.now()),
-            TaskResponse(2L, "Task2", "Theme2", null, "Desc2", false, LocalDateTime.now())
+            TaskResponse(1, theme1, "Task1", "Author1", "Desc1", true, now),
+            TaskResponse(2, theme2, "Task2", null, "Desc2", false, now)
         )
         every { taskService.getAllTasks() } returns expectedTasks
 
-        val result: List<TaskResponse> = taskController.getAllTasks()
+        val result = taskController.getAllTasks()
 
         assertEquals(expectedTasks, result)
         verify { taskService.getAllTasks() }
     }
 
     @Test
-    fun getAllThemesTest() {
-        val expectedThemes = listOf("Theme1", "Theme2")
-        every { taskService.getAllThemes() } returns expectedThemes
-
-        val result: List<String> = taskController.getAllThemes()
-
-        assertEquals(expectedThemes, result)
-        verify { taskService.getAllThemes() }
-    }
-
-    @Test
     fun getTaskByIdTest() {
         val id = 1L
-        val expected = TaskResponse(id, "Task1", "Theme1", "Author1", "Desc1", true, LocalDateTime.now())
+        val now = LocalDateTime.now()
+        val theme = ThemeResponse(1, "Theme1", null, now)
+        val expected = TaskResponse(id, theme, "Task1", "Author1", "Desc1", true, now)
         every { taskService.getTaskById(id) } returns expected
 
-        val response: ResponseEntity<TaskResponse> = taskController.getTasksById(id)
+        val response = taskController.getTasksById(id)
 
         assertEquals(HttpStatus.OK, response.statusCode)
         assertEquals(expected, response.body)
@@ -70,7 +67,9 @@ class TaskControllerTest {
     @Test
     fun getTasksByTitleTest() {
         val title = "Test"
-        val expected = listOf(Task("Test Task 1", "Theme1", "Author1", "Desc1", false))
+        val now = LocalDateTime.now()
+        val theme = ThemeResponse(1, "Theme1", null, now)
+        val expected = listOf(TaskResponse(1, theme, "Test Task 1", "Author1", "Desc1", false, now))
         every { taskService.getTaskByTitle(title) } returns expected
 
         val result = taskController.getTasksByTitle(title)
@@ -81,31 +80,34 @@ class TaskControllerTest {
 
     @Test
     fun getTasksByThemeTest() {
-        val theme = "Work"
-        val expected = listOf(Task("Task1", "Work", "Author1", "Desc1", false))
-        every { taskService.getTaskByTheme(theme) } returns expected
+        val themeName = "Work"
+        val now = LocalDateTime.now()
+        val theme = ThemeResponse(1, themeName, null, now)
+        val expected = listOf(TaskResponse(1, theme, "Task1", "Author1", "Desc1", false, now))
+        every { taskService.getTaskByTheme(themeName) } returns expected
 
-        val result = taskController.getTasksByTheme(theme)
+        val result = taskController.getTasksByTheme(themeName)
 
         assertEquals(expected, result)
-        verify { taskService.getTaskByTheme(theme) }
+        verify { taskService.getTaskByTheme(themeName) }
     }
 
     @Test
     fun getTasksByNullAuthorTest() {
         val author = null
-        val expected = listOf<Task>()
-        every { taskService.getTaskByAuthor(author) } returns expected
+        every { taskService.getTaskByAuthor(author) } returns emptyList()
 
         val result = taskController.getTasksByAuthor(author)
 
-        assertEquals(expected, result)
+        assertEquals(emptyList<TaskResponse>(), result)
         verify { taskService.getTaskByAuthor(author) }
     }
 
     @Test
     fun getStartedTasksTest() {
-        val expected = listOf(Task("Started Task", "Theme", "Author", "Desc", true))
+        val now = LocalDateTime.now()
+        val theme = ThemeResponse(1, "Theme", null, now)
+        val expected = listOf(TaskResponse(1, theme, "Started Task", "Author", "Desc", true, now))
         every { taskService.getStartedTasks() } returns expected
 
         val result = taskController.startedTasks()
@@ -119,20 +121,20 @@ class TaskControllerTest {
         val id = 999L
         every { taskService.getTaskById(id) } throws EntityNotFoundException("Task not found")
 
-        val response: ResponseEntity<TaskResponse> = taskController.getTasksById(id)
-
-        assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
-        assertNull(response.body)
-        verify { taskService.getTaskById(id) }
+        assertThrows<EntityNotFoundException> {
+            taskController.getTasksById(id)
+        }
     }
 
     @Test
     fun postTaskTest() {
-        val taskRequest = Task("New Task", "Theme", "Author", "Desc", false)
-        val saved = TaskResponse(1L, "New Task", "Theme", "Author", "Desc", false, LocalDateTime.now())
+        val now = LocalDateTime.now()
+        val taskRequest = TaskRequest("New Task", "Theme", "Author", "Desc", false)
+        val theme = ThemeResponse(1, "Theme", null, now)
+        val saved = TaskResponse(1, theme, "New Task", "Author", "Desc", false, now)
         every { taskService.postTask(taskRequest) } returns saved
 
-        val response: ResponseEntity<TaskResponse> = taskController.postTask(taskRequest)
+        val response = taskController.postTask(taskRequest)
 
         assertEquals(HttpStatus.CREATED, response.statusCode)
         assertEquals(saved, response.body)
@@ -141,23 +143,24 @@ class TaskControllerTest {
 
     @Test
     fun postTaskAlreadyExistsTest() {
-        val taskRequest = Task("Existing", "Theme", "Author", "Desc", false)
+        val taskRequest = TaskRequest("Existing", "Theme", "Author", "Desc", false)
         every { taskService.postTask(taskRequest) } throws EntityExistsException("Task already exists")
 
-        val response: ResponseEntity<TaskResponse> = taskController.postTask(taskRequest)
-
-        assertEquals(HttpStatus.CONFLICT, response.statusCode)
-        assertNull(response.body)
+        assertThrows<EntityExistsException> {
+            taskController.postTask(taskRequest)
+        }
     }
 
     @Test
     fun putTaskTest() {
         val id = 1L
-        val taskRequest = Task("Updated", "Theme", "Author", "Desc", true)
-        val updated = TaskResponse(id, "Updated", "Theme", "Author", "Desc", true, LocalDateTime.now())
+        val now = LocalDateTime.now()
+        val taskRequest = TaskRequest("Updated", "Theme", "Author", "Desc", true)
+        val theme = ThemeResponse(1, "Theme", null, now)
+        val updated = TaskResponse(id, theme, "Updated", "Author", "Desc", true, now)
         every { taskService.putTaskById(id, taskRequest) } returns updated
 
-        val response: ResponseEntity<TaskResponse> = taskController.putFirstTask(id, taskRequest)
+        val response = taskController.putFirstTask(id, taskRequest)
 
         assertEquals(HttpStatus.OK, response.statusCode)
         assertEquals(updated, response.body)
@@ -167,23 +170,22 @@ class TaskControllerTest {
     @Test
     fun deleteTaskTest() {
         val id = 1L
-        every { taskService.deleteTask(id) } returns Unit
+        every { taskService.deleteTaskById(id) } returns Unit
 
-        val response: ResponseEntity<Unit> = taskController.deleteTaskById(id)
+        val response = taskController.deleteTaskById(id)
 
         assertEquals(HttpStatus.NO_CONTENT, response.statusCode)
         assertNull(response.body)
-        verify { taskService.deleteTask(id) }
+        verify { taskService.deleteTaskById(id) }
     }
 
     @Test
     fun deleteTaskErrorTest() {
         val id = 999L
-        every { taskService.deleteTask(id) } throws EntityNotFoundException("Task not found")
+        every { taskService.deleteTaskById(id) } throws EntityNotFoundException("Task not found")
 
-        val response: ResponseEntity<Unit> = taskController.deleteTaskById(id)
-
-        assertEquals(HttpStatus.NOT_FOUND, response.statusCode)
-        assertNull(response.body)
+        assertThrows<EntityNotFoundException> {
+            taskController.deleteTaskById(id)
+        }
     }
 }

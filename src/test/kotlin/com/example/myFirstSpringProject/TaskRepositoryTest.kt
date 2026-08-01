@@ -1,5 +1,9 @@
 package com.example.myFirstSpringProject
 
+import com.example.myFirstSpringProject.model.TaskEntity
+import com.example.myFirstSpringProject.model.ThemeEntity
+import com.example.myFirstSpringProject.repository.TaskRepository
+import com.example.myFirstSpringProject.repository.ThemeRepository
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -14,96 +18,71 @@ import kotlin.test.assertTrue
 class TaskRepositoryTest {
 
     @Autowired
-    private lateinit var repository: TaskRepository
+    private lateinit var taskRepository: TaskRepository
+    @Autowired
+    private lateinit var themeRepository: ThemeRepository
 
     private val now = LocalDateTime.now()
 
     @BeforeEach
     fun setUp() {
-        repository.deleteAll()
+        taskRepository.deleteAll()
+        themeRepository.deleteAll()
     }
 
-    @Test
-    fun findAllThemesTest() {
-        val task1 = TaskEntity(
-            title = "Task1", theme = "Work", author = "John",
-            description = "Desc1", isStarted = true, updateAt = now
-        )
-        val task2 = TaskEntity(
-            title = "Task2", theme = "Work", author = "Jane",
-            description = "Desc2", isStarted = false, updateAt = now
-        )
-        val task3 = TaskEntity(
-            title = "Task3", theme = "Home", author = "Bob",
-            description = "Desc3", isStarted = true, updateAt = now
-        )
-        repository.saveAll(listOf(task1, task2, task3))
-
-        val result = repository.findAllThemes()
-
-        assertEquals(2, result.size)
-        assertTrue(result.containsAll(listOf("Work", "Home")))
-    }
+    private fun createTheme(title: String): ThemeEntity =
+        themeRepository.save(ThemeEntity(themeTitle = title))
 
     @Test
     fun findByTitleTest() {
-        val task1 = TaskEntity(
-            title = "Learn Kotlin", theme = "Education", author = "Alex",
-            description = "Study", isStarted = true, updateAt = now
-        )
-        val task2 = TaskEntity(
-            title = "Learn Spring", theme = "Education", author = "Alex",
-            description = "Study", isStarted = false, updateAt = now
-        )
-        val task3 = TaskEntity(
-            title = "Learn Kotlin", theme = "Work", author = "Maria",
-            description = "Practice", isStarted = false, updateAt = now
-        )
-        repository.saveAll(listOf(task1, task2, task3))
+        val theme1 = createTheme("Education")
+        val theme2 = createTheme("Work")
 
-        val result = repository.findByTitle("Learn Kotlin")
+        val task1 = TaskEntity(
+            title = "Learn Kotlin",
+            theme = theme1,
+            author = "Alex",
+            description = "Study",
+            isStarted = true,
+            updateAt = now
+        )
+        val task2 = TaskEntity(title = "Learn Spring", theme = theme1, author = "Alex", description = "Study", isStarted = false, updateAt = now)
+        val task3 = TaskEntity(title = "Learn Kotlin", theme = theme2, author = "Maria", description = "Practice", isStarted = false, updateAt = now)
+
+        taskRepository.saveAll(listOf(task1, task2, task3))
+
+        val result = taskRepository.findByTitle("Learn Kotlin")
 
         assertEquals(2, result.size)
         assertEquals("Learn Kotlin", result[0].title)
         assertEquals("Learn Kotlin", result[1].title)
-        assertEquals(setOf("Education", "Work"), result.map { it.theme }.toSet())
+        assertEquals(setOf("Education", "Work"), result.map { it.theme.themeTitle }.toSet())
     }
 
     @Test
-    fun findByThemeTest() {
-        val task1 = TaskEntity(
-            title = "Task1", theme = "Work", author = "John",
-            description = "Desc1", isStarted = true, updateAt = now
-        )
-        val task2 = TaskEntity(
-            title = "Task2", theme = "Home", author = "Jane",
-            description = "Desc2", isStarted = false, updateAt = now
-        )
-        repository.saveAll(listOf(task1, task2))
+    fun findByTheme_ThemeTitleTest() {
+        val themeWork = createTheme("Work")
+        val themeHome = createTheme("Home")
 
-        val result = repository.findByTheme("Home")
+        val task1 = TaskEntity(title = "Task1", theme = themeWork, author = "John", description = "Desc1", isStarted = true, updateAt = now)
+        val task2 = TaskEntity(title = "Task2", theme = themeHome, author = "Jane", description = "Desc2", isStarted = false, updateAt = now)
+        taskRepository.saveAll(listOf(task1, task2))
+
+        val result = taskRepository.findByTheme_ThemeTitle("Home")
 
         assertEquals(1, result.size)
-        assertEquals("Home", result[0].theme)
+        assertEquals("Home", result[0].theme.themeTitle)
     }
 
     @Test
     fun findByAuthorTest() {
-        val task1 = TaskEntity(
-            title = "Task1", theme = "Work", author = "John",
-            description = "Desc1", isStarted = true, updateAt = now
-        )
-        val task2 = TaskEntity(
-            title = "Task2", theme = "Home", author = "Jane",
-            description = "Desc2", isStarted = false, updateAt = now
-        )
-        val task3 = TaskEntity(
-            title = "Task3", theme = "Work", author = null,
-            description = "Desc3", isStarted = false, updateAt = now
-        )
-        repository.saveAll(listOf(task1, task2, task3))
+        val theme = createTheme("Work")
+        val task1 = TaskEntity(title = "Task1", theme = theme, author = "John", description = "Desc1", isStarted = true, updateAt = now)
+        val task2 = TaskEntity(title = "Task2", theme = theme, author = "Jane", description = "Desc2", isStarted = false, updateAt = now)
+        val task3 = TaskEntity(title = "Task3", theme = theme, author = null, description = "Desc3", isStarted = false, updateAt = now)
+        taskRepository.saveAll(listOf(task1, task2, task3))
 
-        val result = repository.findByAuthor("John")
+        val result = taskRepository.findByAuthor("John")
 
         assertEquals(1, result.size)
         assertEquals("John", result[0].author)
@@ -111,17 +90,12 @@ class TaskRepositoryTest {
 
     @Test
     fun findByAuthorNullTest() {
-        val task1 = TaskEntity(
-            title = "Task1", theme = "Work", author = null,
-            description = "Desc1", isStarted = true, updateAt = now
-        )
-        val task2 = TaskEntity(
-            title = "Task2", theme = "Home", author = "Jane",
-            description = "Desc2", isStarted = false, updateAt = now
-        )
-        repository.saveAll(listOf(task1, task2))
+        val theme = createTheme("Work")
+        val task1 = TaskEntity(title = "Task1", theme = theme, author = null, description = "Desc1", isStarted = true, updateAt = now)
+        val task2 = TaskEntity(title = "Task2", theme = theme, author = "Jane", description = "Desc2", isStarted = false, updateAt = now)
+        taskRepository.saveAll(listOf(task1, task2))
 
-        val result = repository.findByAuthor(null)
+        val result = taskRepository.findByAuthor(null)
 
         assertEquals(1, result.size)
         assertNull(result[0].author)
@@ -129,33 +103,25 @@ class TaskRepositoryTest {
 
     @Test
     fun findByIsStartedTrueTest() {
-        val task1 = TaskEntity(
-            title = "Task1", theme = "Work", author = "John",
-            description = "Desc1", isStarted = true, updateAt = now
-        )
-        val task2 = TaskEntity(
-            title = "Task2", theme = "Home", author = "Jane",
-            description = "Desc2", isStarted = false, updateAt = now
-        )
-        repository.saveAll(listOf(task1, task2))
+        val theme = createTheme("Work")
+        val task1 = TaskEntity(title = "Task1", theme = theme, author = "John", description = "Desc1", isStarted = true, updateAt = now)
+        val task2 = TaskEntity(title = "Task2", theme = theme, author = "Jane", description = "Desc2", isStarted = false, updateAt = now)
+        taskRepository.saveAll(listOf(task1, task2))
 
-        val result = repository.findByIsStartedTrue()
+        val result = taskRepository.findByIsStartedTrue()
 
         assertEquals(1, result.size)
         assertTrue(result[0].isStarted)
     }
 
     @Test
-    fun existsByTitleAndThemeAndAuthorAndDescriptionTest() {
-        val task = TaskEntity(
-            title = "Unique", theme = "Test", author = "Sam",
-            description = "Check", isStarted = false, updateAt = now
-        )
-        repository.save(task)
+    fun existsByTitleAndAuthorAndDescriptionTest() {
+        val theme = createTheme("Test")
+        val task = TaskEntity(title = "Unique", theme = theme, author = "Sam", description = "Check", isStarted = false, updateAt = now)
+        taskRepository.save(task)
 
-        val exists = repository.existsByTitleAndThemeAndAuthorAndDescription(
+        val exists = taskRepository.existsByTitleAndAuthorAndDescription(
             title = "Unique",
-            theme = "Test",
             author = "Sam",
             description = "Check"
         )
@@ -164,10 +130,9 @@ class TaskRepositoryTest {
     }
 
     @Test
-    fun existsByTitleAndThemeAndAuthorAndDescriptionNotFoundTest() {
-        val exists = repository.existsByTitleAndThemeAndAuthorAndDescription(
+    fun existsByTitleAndAuthorAndDescriptionNotFoundTest() {
+        val exists = taskRepository.existsByTitleAndAuthorAndDescription(
             title = "Nonexistent",
-            theme = "Test",
             author = "Sam",
             description = "Check"
         )
@@ -176,16 +141,13 @@ class TaskRepositoryTest {
     }
 
     @Test
-    fun existsByTitleAndThemeAndAuthorAndDescriptionNullAuthorTest() {
-        val task = TaskEntity(
-            title = "NullAuthor", theme = "Test", author = null,
-            description = "Check", isStarted = false, updateAt = now
-        )
-        repository.save(task)
+    fun existsByTitleAndAuthorAndDescriptionNullAuthorTest() {
+        val theme = createTheme("Test")
+        val task = TaskEntity(title = "NullAuthor", theme = theme, author = null, description = "Check", isStarted = false, updateAt = now)
+        taskRepository.save(task)
 
-        val exists = repository.existsByTitleAndThemeAndAuthorAndDescription(
+        val exists = taskRepository.existsByTitleAndAuthorAndDescription(
             title = "NullAuthor",
-            theme = "Test",
             author = null,
             description = "Check"
         )

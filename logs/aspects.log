@@ -1,4 +1,0 @@
-2026-08-01 18:14:19 [main] INFO  AspectLogger - Called SecurityConfig.userDetailsService in package com.example.myFirstSpringProject.security
-
-2026-08-01 18:14:19 [main] INFO  AspectLogger - SecurityConfig$$SpringCGLIB$$0.userDetailsService returned with: org.springframework.security.provisioning.InMemoryUserDetailsManager@31741bb6
-2026-08-01 18:14:19 [main] INFO  AspectLogger - Application is shutting down...

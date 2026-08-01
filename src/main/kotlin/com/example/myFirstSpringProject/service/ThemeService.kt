@@ -40,7 +40,7 @@ class ThemeService(private val themeRepository: ThemeRepository) {
         theme: ThemeRequest
     ): ThemeResponse {
         val result = themeRepository.findById(id)
-            .orElseThrow { throw EntityNotFoundException("Theme with ID=$id not found") }
+            .orElseThrow { throw EntityNotFoundException("Theme with ID $id not found") }
             .run{
                 this.themeTitle = theme.themeTitle
                 this.description = theme.description
