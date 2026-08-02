@@ -56,7 +56,7 @@
 {
   "title": "Изучить Kotlin",
   "theme": "Обучение",
-  "author": "Алексей",
+  "author": "Фёдор",
   "description": "Пройти курс и сделать проект",
   "isStarted": false
 }
@@ -65,12 +65,17 @@
   ```json
 {
   "id": 1,
+  "theme": {
+    "id": 1,
+    "themeTitle": "Обучение",
+    "description": null,
+    "updateAt": "2026-08-02T15:14:32.305295"
+  },
   "title": "Изучить Kotlin",
-  "theme": "Обучение",
-  "author": "Алексей",
+  "author": "Фёдор",
   "description": "Пройти курс и сделать проект",
-  "isStarted": false,
-  "updateAt": "2026-07-07T18:00:00.000Z"
+  "updateAt": "2026-08-02T15:14:32.362767",
+  "started": false
 }
 ```
 
@@ -81,12 +86,17 @@
 [
   {
     "id": 1,
+    "theme": {
+      "id": 1,
+      "themeTitle": "Обучение",
+      "description": null,
+      "updateAt": "2026-08-02T15:14:32.305295"
+    },
     "title": "Изучить Kotlin",
-    "theme": "Обучение",
-    "author": "Алексей",
+    "author": "Фёдор",
     "description": "Пройти курс и сделать проект",
-    "updateAt": "2026-07-26T14:43:25.753632",
-    "isStarted": false
+    "updateAt": "2026-08-02T15:14:32.362767",
+    "started": false
   }
 ]
 ```
@@ -97,7 +107,7 @@
 {
   "title": "Изучить Kotlin и Spring",
   "theme": "Обучение",
-  "author": "Алексей",
+  "author": "Фёдор",
   "description": "Обновлённое описание",
   "isStarted": true
 }
@@ -106,13 +116,18 @@
 Ответ(200 OK):
 ```json
 {
+  "id": 1,
+  "theme": {
     "id": 1,
-    "title": "Изучить Kotlin и Spring",
-    "theme": "Обучение",
-    "author": "Алексей",
-    "description": "Обновлённое описание",
-    "updateAt": "2026-07-26T14:43:25.753632",
-    "isStarted": true
+    "themeTitle": "Обучение",
+    "description": null,
+    "updateAt": "2026-08-02T15:14:32.305295"
+  },
+  "title": "Изучить Kotlin и Spring",
+  "author": "Фёдор",
+  "description": "Обновлённое описание",
+  "updateAt": "2026-08-02T15:14:32.362767",
+  "started": true
 }
 ```
 
@@ -168,13 +183,13 @@ Password: (оставить пустым)\
 ✅ Чистое разделение слоёв (Controller → Service → Repository)\
 ✅ DTO + Mapper для изоляции API от сущностей БД\
 ✅ In-memory БД для быстрой разработки\
+✅ Разделение ответственности за разные таблицы на разные горизонтальные слои\
 ✅ Настройка через application.yml\
 ✅ Базовая аутентификация (Spring Security)\
 ✅ Мониторинг через Actuator\
-✅ Юнит- и интеграционные тесты
-✅ AOP-logging
+✅ Юнит- и интеграционные тесты\
+✅ AOP-logging\
 ✅ Централизованная обработка исключений(AOP)
-
 
 ## 🧠 Чему научился в этом проекте
 #### Создание REST API на Kotlin + Spring Boot 3
@@ -182,6 +197,7 @@ Password: (оставить пустым)\
 #### Проектирование архитектуры Controller-Service-Repository
 #### Валидация данных и обработка ошибок
 #### Использование DTO и мапперов
+#### Работа с несколькими таблицами, связывание
 #### Настройка H2 Database и подключение к ней
 #### Работа с Gradle (Kotlin DSL)
 #### Внедрение Basic Authentication (Spring Security)
