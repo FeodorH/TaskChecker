@@ -6,6 +6,8 @@ import com.example.myFirstSpringProject.model.ThemeResponse
 import com.example.myFirstSpringProject.repository.ThemeRepository
 import jakarta.persistence.EntityExistsException
 import jakarta.persistence.EntityNotFoundException
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -13,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 @Transactional
 class ThemeService(private val themeRepository: ThemeRepository) {
 
-    fun getAllThemes(): List<ThemeResponse> = themeRepository.findAll().map { ThemeMapper.toThemeResponse(it) }
+    fun getAllThemes(pageable: Pageable): Page<ThemeResponse> = themeRepository.findAll(pageable).map { ThemeMapper.toThemeResponse(it) }
 
     fun getThemeById(id: Long) : ThemeResponse {
         val entity = themeRepository.findById(id)

@@ -6,6 +6,10 @@ import com.example.myFirstSpringProject.model.ThemeRequest
 import com.example.myFirstSpringProject.model.ThemeResponse
 import com.example.myFirstSpringProject.service.TaskService
 import jakarta.validation.Valid
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -24,7 +28,9 @@ class TaskController(
     private val taskService: TaskService
 ) {
     @GetMapping
-    fun getAllTasks() : List<TaskResponse> = taskService.getAllTasks()
+    fun getAllTasks(
+    @PageableDefault(size = 10, sort = ["title"], direction = Sort.Direction.ASC) pageable: Pageable
+    ): Page<TaskResponse> = taskService.getAllTasks(pageable)
 
     @GetMapping("/by-id")
     fun getTasksById(@RequestParam(value = "id") id: Long) : ResponseEntity<TaskResponse> =

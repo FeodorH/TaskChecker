@@ -8,6 +8,8 @@ import com.example.myFirstSpringProject.repository.TaskRepository
 import com.example.myFirstSpringProject.repository.ThemeRepository
 import jakarta.persistence.EntityExistsException
 import jakarta.persistence.EntityNotFoundException
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.stereotype.Service
 
@@ -17,7 +19,10 @@ class TaskService(
     private val taskRepository: TaskRepository,
     private val themeRepository: ThemeRepository
 ) {
-    fun getAllTasks(): List<TaskResponse> = taskRepository.findAll().map { TaskMapper.toTaskResponse(it) }
+    fun getAllTasks(pageable: Pageable): Page<TaskResponse> {
+        val page = taskRepository.findAll(pageable)
+        return page.map { TaskMapper.toTaskResponse(it) }
+    }
 
     fun getTaskById(id : Long) : TaskResponse {
         val entity = taskRepository.findById(id)

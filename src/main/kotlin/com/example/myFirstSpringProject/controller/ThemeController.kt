@@ -4,6 +4,10 @@ import com.example.myFirstSpringProject.model.ThemeRequest
 import com.example.myFirstSpringProject.model.ThemeResponse
 import com.example.myFirstSpringProject.service.ThemeService
 import jakarta.validation.Valid
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -23,7 +27,9 @@ class ThemeController(
 ) {
 
     @GetMapping
-    fun getAllThemes() : List<ThemeResponse> = themeService.getAllThemes()
+    fun getAllThemes(
+        @PageableDefault(size = 10, sort = ["themeTitle"], direction = Sort.Direction.ASC) pageable: Pageable
+    ): Page<ThemeResponse> = themeService.getAllThemes(pageable)
 
     @GetMapping("/by-id")
     fun getThemeById(@RequestParam(value = "id") id: Long) : ResponseEntity<ThemeResponse> =
