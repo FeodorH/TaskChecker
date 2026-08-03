@@ -19,6 +19,10 @@ import org.hibernate.validator.internal.util.Contracts.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import java.time.LocalDateTime
 import java.util.Optional
 import kotlin.test.Test
@@ -42,31 +46,30 @@ class TaskServiceTest {
 
     @Test
     fun getAllTasksTest() {
+        val now = LocalDateTime.now()
         val theme1 = ThemeEntity(id = 1, themeTitle = "Theme1", updateAt = now)
         val theme2 = ThemeEntity(id = 2, themeTitle = "Theme2", updateAt = now)
 
         val entities = listOf(
-            TaskEntity(
-                id = 1,
-                theme = theme1,
-                title = "Task1",
-                author = "Author1",
-                description = "Desc1",
-                isStarted = true,
-                updateAt = now
-            ),
+            TaskEntity(id = 1, theme = theme1, title = "Task1", author = "Author1", description = "Desc1", isStarted = true, updateAt = now),
             TaskEntity(id = 2, theme = theme2, title = "Task2", author = null, description = "Desc2", isStarted = false, updateAt = now)
         )
-        val expected = listOf(
+        val pageable: Pageable = PageRequest.of(0, 10)
+        val entityPage = PageImpl(entities, pageable, entities.size.toLong())
+
+        val expectedContent = listOf(
             TaskResponse(1, ThemeMapper.toThemeResponse(theme1), "Task1", "Author1", "Desc1", true, now),
             TaskResponse(2, ThemeMapper.toThemeResponse(theme2), "Task2", null, "Desc2", false, now)
         )
-        every { taskRepository.findAll() } returns entities
+        val expectedPage = PageImpl(expectedContent, pageable, expectedContent.size.toLong())
 
-        val result = taskService.getAllTasks()
+        every { taskRepository.findAll(pageable) } returns entityPage
 
-        assertEquals(expected, result)
-        verify(exactly = 1) { taskRepository.findAll() }
+        val result: Page<TaskResponse> = taskService.getAllTasks(pageable)
+
+        assertEquals(expectedPage.content, result.content)
+        assertEquals(expectedPage.totalElements, result.totalElements)
+        verify(exactly = 1) { taskRepository.findAll(pageable) }
     }
 
     @Test

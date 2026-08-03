@@ -14,6 +14,10 @@ import jakarta.persistence.EntityNotFoundException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.time.LocalDateTime
@@ -37,16 +41,20 @@ class TaskControllerTest {
         val now = LocalDateTime.now()
         val theme1 = ThemeResponse(1, "Theme1", null, now)
         val theme2 = ThemeResponse(2, "Theme2", null, now)
-        val expectedTasks = listOf(
+        val content = listOf(
             TaskResponse(1, theme1, "Task1", "Author1", "Desc1", true, now),
             TaskResponse(2, theme2, "Task2", null, "Desc2", false, now)
         )
-        every { taskService.getAllTasks() } returns expectedTasks
+        val pageable: Pageable = PageRequest.of(0, 10)
+        val expectedPage = PageImpl(content, pageable, content.size.toLong())
 
-        val result = taskController.getAllTasks()
+        every { taskService.getAllTasks(pageable) } returns expectedPage
 
-        assertEquals(expectedTasks, result)
-        verify { taskService.getAllTasks() }
+        val result: Page<TaskResponse> = taskController.getAllTasks(pageable)
+
+        assertEquals(expectedPage.content, result.content)
+        assertEquals(expectedPage.totalElements, result.totalElements)
+        verify { taskService.getAllTasks(pageable) }
     }
 
     @Test

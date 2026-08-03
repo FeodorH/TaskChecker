@@ -14,6 +14,10 @@ import jakarta.persistence.EntityNotFoundException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import java.time.LocalDateTime
 import java.util.Optional
 import kotlin.test.Test
@@ -34,20 +38,27 @@ class ThemeServiceTest {
 
     @Test
     fun getAllThemesTest() {
+        val now = LocalDateTime.now()
         val entities = listOf(
             ThemeEntity(id = 1, themeTitle = "Theme1", updateAt = now),
             ThemeEntity(id = 2, themeTitle = "Theme2", description = "Desc", updateAt = now)
         )
-        val expected = listOf(
+        val pageable: Pageable = PageRequest.of(0, 10)
+        val entityPage = PageImpl(entities, pageable, entities.size.toLong())
+
+        val expectedContent = listOf(
             ThemeResponse(1, "Theme1", null, now),
             ThemeResponse(2, "Theme2", "Desc", now)
         )
-        every { themeRepository.findAll() } returns entities
+        val expectedPage = PageImpl(expectedContent, pageable, expectedContent.size.toLong())
 
-        val result = themeService.getAllThemes()
+        every { themeRepository.findAll(pageable) } returns entityPage
 
-        assertEquals(expected, result)
-        verify(exactly = 1) { themeRepository.findAll() }
+        val result: Page<ThemeResponse> = themeService.getAllThemes(pageable)
+
+        assertEquals(expectedPage.content, result.content)
+        assertEquals(expectedPage.totalElements, result.totalElements)
+        verify(exactly = 1) { themeRepository.findAll(pageable) }
     }
 
     @Test
