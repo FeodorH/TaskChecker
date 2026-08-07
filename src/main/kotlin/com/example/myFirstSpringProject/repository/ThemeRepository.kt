@@ -10,11 +10,12 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ThemeRepository : JpaRepository<ThemeEntity, Long> {
 
-    override fun findAll(pageable : Pageable) : Page<ThemeEntity>
+    override fun findAll(pageable: Pageable): Page<ThemeEntity>
 
     fun existsByThemeTitleAndDescription(
         themeTitle: String,
-        description: String?) : Boolean
+        description: String?
+    ): Boolean
 
     fun findByThemeTitle(themeTitle: String): ThemeEntity?
 

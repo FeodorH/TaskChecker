@@ -17,10 +17,11 @@ class LoggingAspect {
 
     //for all packages
     @Pointcut("execution(* com.example.myFirstSpringProject..*.*(..))")
-    fun serviceLayerMethods() {}
+    fun serviceLayerMethods() {
+    }
 
     @Before("serviceLayerMethods()")
-    fun loggingBefore(joinPoint: JoinPoint){
+    fun loggingBefore(joinPoint: JoinPoint) {
         val methodName = joinPoint.signature.name
         val fullClassName = joinPoint.signature.declaringTypeName
         val className = fullClassName.substring(fullClassName.lastIndexOf('.') + 1)

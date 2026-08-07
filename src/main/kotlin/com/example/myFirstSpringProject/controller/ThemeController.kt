@@ -32,27 +32,29 @@ class ThemeController(
     ): Page<ThemeResponse> = themeService.getAllThemes(pageable)
 
     @GetMapping("/by-id")
-    fun getThemeById(@RequestParam(value = "id") id: Long) : ResponseEntity<ThemeResponse> =
+    fun getThemeById(@RequestParam(value = "id") id: Long): ResponseEntity<ThemeResponse> =
         ResponseEntity<ThemeResponse>.ok(themeService.getThemeById(id))
 
     @GetMapping("/by-themeTitle")
-    fun getThemeByThemeTitle(@RequestParam(value = "themeTitle") themeTitle: String) : ResponseEntity<ThemeResponse> =
+    fun getThemeByThemeTitle(@RequestParam(value = "themeTitle") themeTitle: String): ResponseEntity<ThemeResponse> =
         ResponseEntity<ThemeResponse>.ok(themeService.getThemeByThemeTitle(themeTitle))
 
     @PostMapping
-    fun postTheme(@Valid @RequestBody theme: ThemeRequest) : ResponseEntity<ThemeResponse> {
+    fun postTheme(@Valid @RequestBody theme: ThemeRequest): ResponseEntity<ThemeResponse> {
         val result = themeService.postTheme(theme)
         return ResponseEntity.status(HttpStatus.CREATED).body(result)
     }
 
     @PutMapping("/{id}")
-    fun putTheme(@PathVariable id: Long,
-                 @Valid @RequestBody theme: ThemeRequest) : ResponseEntity<ThemeResponse> {
-        return ResponseEntity.ok(themeService.putThemeById(id,theme))
+    fun putTheme(
+        @PathVariable id: Long,
+        @Valid @RequestBody theme: ThemeRequest
+    ): ResponseEntity<ThemeResponse> {
+        return ResponseEntity.ok(themeService.putThemeById(id, theme))
     }
 
     @DeleteMapping("/{id}")
-    fun deleteThemeById(@PathVariable id: Long) : ResponseEntity<Unit> {
+    fun deleteThemeById(@PathVariable id: Long): ResponseEntity<Unit> {
         themeService.deleteThemeById(id)
         return ResponseEntity.noContent().build()
     }
