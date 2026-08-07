@@ -29,42 +29,44 @@ class TaskController(
 ) {
     @GetMapping
     fun getAllTasks(
-    @PageableDefault(size = 10, sort = ["title"], direction = Sort.Direction.ASC) pageable: Pageable
+        @PageableDefault(size = 10, sort = ["title"], direction = Sort.Direction.ASC) pageable: Pageable
     ): Page<TaskResponse> = taskService.getAllTasks(pageable)
 
     @GetMapping("/by-id")
-    fun getTasksById(@RequestParam(value = "id") id: Long) : ResponseEntity<TaskResponse> =
+    fun getTasksById(@RequestParam(value = "id") id: Long): ResponseEntity<TaskResponse> =
         ResponseEntity.ok(taskService.getTaskById(id))
 
     @GetMapping("/by-title")
-    fun getTasksByTitle(@RequestParam(value = "title") title: String) : List<TaskResponse> =
+    fun getTasksByTitle(@RequestParam(value = "title") title: String): List<TaskResponse> =
         taskService.getTaskByTitle(title)
 
     @GetMapping("/by-theme")
-    fun getTasksByTheme(@RequestParam(value = "theme") theme: String) : List<TaskResponse> =
+    fun getTasksByTheme(@RequestParam(value = "theme") theme: String): List<TaskResponse> =
         taskService.getTaskByTheme(theme)
 
     @GetMapping("/by-author")
-    fun getTasksByAuthor(@RequestParam(value = "author") author: String?) : List<TaskResponse> =
+    fun getTasksByAuthor(@RequestParam(value = "author") author: String?): List<TaskResponse> =
         taskService.getTaskByAuthor(author)
 
     @GetMapping("/is-started")
-    fun startedTasks() : List<TaskResponse> =
+    fun startedTasks(): List<TaskResponse> =
         taskService.getStartedTasks()
 
     @PostMapping
-    fun postTask(@Valid @RequestBody task: TaskRequest) : ResponseEntity<TaskResponse> {
+    fun postTask(@Valid @RequestBody task: TaskRequest): ResponseEntity<TaskResponse> {
         val result = taskService.postTask(task)
         return ResponseEntity.status(HttpStatus.CREATED).body(result)
-        }
+    }
 
     @PutMapping("/{id}")
-    fun putFirstTask(@PathVariable id:Long,
-                     @Valid @RequestBody task: TaskRequest) : ResponseEntity<TaskResponse> =
-        ResponseEntity.ok(taskService.putTaskById(id,task))
+    fun putFirstTask(
+        @PathVariable id: Long,
+        @Valid @RequestBody task: TaskRequest
+    ): ResponseEntity<TaskResponse> =
+        ResponseEntity.ok(taskService.putTaskById(id, task))
 
     @DeleteMapping("/{id}")
-    fun deleteTaskById(@PathVariable(value = "id") id: Long) : ResponseEntity<Unit> {
+    fun deleteTaskById(@PathVariable(value = "id") id: Long): ResponseEntity<Unit> {
         taskService.deleteTaskById(id)
         return ResponseEntity.noContent().build()
     }
