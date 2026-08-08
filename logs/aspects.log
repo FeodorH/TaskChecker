@@ -1,29 +1,11 @@
-2026-08-06 13:42:27 [main] INFO  AspectLogger - Called SecurityConfig.userDetailsService in package com.example.myFirstSpringProject.security
+2026-08-08 16:25:57 [Test worker] INFO  AspectLogger - Called SecurityConfig.userDetailsService in package com.example.myFirstSpringProject.security
 
-2026-08-06 13:42:28 [main] INFO  AspectLogger - SecurityConfig$$SpringCGLIB$$0.userDetailsService returned with: org.springframework.security.provisioning.InMemoryUserDetailsManager@7cb9295f
-2026-08-06 13:42:28 [main] INFO  AspectLogger - Called SecurityConfig.securityFilterChain in package com.example.myFirstSpringProject.security
+2026-08-08 16:25:57 [Test worker] INFO  AspectLogger - SecurityConfig$$SpringCGLIB$$0.userDetailsService returned with: org.springframework.security.provisioning.InMemoryUserDetailsManager@39584147
+2026-08-08 16:25:58 [Test worker] INFO  AspectLogger - Called SecurityConfig.securityFilterChain in package com.example.myFirstSpringProject.security
 
-2026-08-06 13:42:28 [main] INFO  AspectLogger - SecurityConfig$$SpringCGLIB$$0.securityFilterChain returned with: DefaultSecurityFilterChain [RequestMatcher=any request, Filters=[org.springframework.security.web.session.DisableEncodeUrlFilter@29b21fa6, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4159c66d, org.springframework.security.web.context.SecurityContextHolderFilter@1bab3926, org.springframework.security.web.header.HeaderWriterFilter@aecfc07, org.springframework.web.filter.CorsFilter@19a48bde, org.springframework.security.web.authentication.logout.LogoutFilter@2e3334d, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@233b5c71, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@28023029, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7bfa2d74, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@5137526a, org.springframework.security.web.access.ExceptionTranslationFilter@1a9ce44, org.springframework.security.web.access.intercept.AuthorizationFilter@4058b398]]
-2026-08-06 13:42:29 [main] INFO  AspectLogger - Called ApplicationActivityLogging.run in package com.example.myFirstSpringProject.logging
+2026-08-08 16:25:58 [Test worker] INFO  AspectLogger - SecurityConfig$$SpringCGLIB$$0.securityFilterChain returned with: DefaultSecurityFilterChain [RequestMatcher=any request, Filters=[org.springframework.security.web.session.DisableEncodeUrlFilter@7b3d759f, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@6e11d059, org.springframework.security.web.context.SecurityContextHolderFilter@6413fef3, org.springframework.security.web.header.HeaderWriterFilter@2c427287, org.springframework.web.filter.CorsFilter@62c4ad40, org.springframework.security.web.authentication.logout.LogoutFilter@64d691b2, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@6aca85da, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@5acf07e7, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@205c0b1a, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@19bd1f98, org.springframework.security.web.access.ExceptionTranslationFilter@3b2b9b96, org.springframework.security.web.access.intercept.AuthorizationFilter@491b5bd9]]
+2026-08-08 16:25:59 [Test worker] INFO  AspectLogger - Called ApplicationActivityLogging.run in package com.example.myFirstSpringProject.logging
 
-2026-08-06 13:42:29 [main] INFO  AspectLogger - Application started successfully!
-2026-08-06 13:42:29 [main] INFO  AspectLogger - ApplicationActivityLogging.run returned with: null
-2026-08-06 13:42:39 [http-nio-8080-exec-1] INFO  AspectLogger - Called TaskController.getAllTasks in package com.example.myFirstSpringProject.controller
-
-2026-08-06 13:42:39 [http-nio-8080-exec-1] INFO  AspectLogger - Called TaskService.getAllTasks in package com.example.myFirstSpringProject.service
-
-2026-08-06 13:42:39 [http-nio-8080-exec-1] INFO  AspectLogger - Called TaskRepository.findAll in package com.example.myFirstSpringProject.repository
-
-2026-08-06 13:42:39 [http-nio-8080-exec-1] INFO  AspectLogger - $Proxy158.findAll returned with: Page 1 of 1 containing com.example.myFirstSpringProject.model.TaskEntity instances
-2026-08-06 13:42:39 [http-nio-8080-exec-1] INFO  AspectLogger - TaskService.getAllTasks returned with: Page 1 of 1 containing com.example.myFirstSpringProject.model.TaskResponse instances
-2026-08-06 13:42:39 [http-nio-8080-exec-1] INFO  AspectLogger - TaskController.getAllTasks returned with: Page 1 of 1 containing com.example.myFirstSpringProject.model.TaskResponse instances
-2026-08-06 13:43:07 [http-nio-8080-exec-2] INFO  AspectLogger - Called ThemeController.getAllThemes in package com.example.myFirstSpringProject.controller
-
-2026-08-06 13:43:07 [http-nio-8080-exec-2] INFO  AspectLogger - Called ThemeService.getAllThemes in package com.example.myFirstSpringProject.service
-
-2026-08-06 13:43:07 [http-nio-8080-exec-2] INFO  AspectLogger - Called ThemeRepository.findAll in package com.example.myFirstSpringProject.repository
-
-2026-08-06 13:43:07 [http-nio-8080-exec-2] INFO  AspectLogger - $Proxy159.findAll returned with: Page 1 of 1 containing com.example.myFirstSpringProject.model.ThemeEntity instances
-2026-08-06 13:43:07 [http-nio-8080-exec-2] INFO  AspectLogger - ThemeService.getAllThemes returned with: Page 1 of 1 containing com.example.myFirstSpringProject.model.ThemeResponse instances
-2026-08-06 13:43:07 [http-nio-8080-exec-2] INFO  AspectLogger - ThemeController.getAllThemes returned with: Page 1 of 1 containing com.example.myFirstSpringProject.model.ThemeResponse instances
-2026-08-06 13:43:24 [SpringApplicationShutdownHook] INFO  AspectLogger - Application is shutting down...
+2026-08-08 16:25:59 [Test worker] INFO  AspectLogger - Application started successfully!
+2026-08-08 16:25:59 [Test worker] INFO  AspectLogger - ApplicationActivityLogging.run returned with: null
+2026-08-08 16:26:06 [SpringApplicationShutdownHook] INFO  AspectLogger - Application is shutting down...
