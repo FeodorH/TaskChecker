@@ -46,3 +46,10 @@ kotlin {
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+tasks.register("printVersion") {
+    description = "print version for jenkins"
+    doLast {
+        println(project.version)
+    }
+}
