@@ -96,6 +96,10 @@ pipeline {
                             --name ${containerName} \\
                             -p ${hostPort}:${containerPort} \\
                             -e JAVA_OPTS='-Xmx512m' \\
+                            -e SPRING_PROFILES_ACTIVE=prod\\
+                            -e DB_URL=jdbc:postgresql://host.docker.internal:5432/taskdb \\
+                            -e DB_USER=postgres \\
+                            -e DB_PASSWORD=password \\
                             --restart unless-stopped \\
                             ${REGISTRY}/${IMAGE}:${env.LATEST_TAG}
                         sleep 5
