@@ -5,6 +5,7 @@ pipeline {
             REGISTRY = 'docker.io'
             IMAGE = 'feodorh/taskchecker'
             LATEST_TAG = 'latest'
+            DEPLOY_BRANCH = 'master'
         }
 
     stages {
@@ -69,7 +70,9 @@ pipeline {
                         docker build -t ${REGISTRY}/${IMAGE}:${env.DOCKER_TAG} .
                         docker push ${REGISTRY}/${IMAGE}:${env.DOCKER_TAG}
 
-                        if [ "${env.BRANCH_NAME}" == "master" ]; then
+                        echo "Current branch: ${env.BRANCH_NAME}"
+                        if [ "${env.BRANCH_NAME}" = "${env.DEPLOY_BRANCH}" ]; then
+                            echo "Tagging and pushing latest"
                             docker tag ${REGISTRY}/${IMAGE}:${env.DOCKER_TAG} ${REGISTRY}/${IMAGE}:${LATEST_TAG}
                             docker push ${REGISTRY}/${IMAGE}:${LATEST_TAG}
                         fi
@@ -80,7 +83,7 @@ pipeline {
 
         stage('Deploy') {
             when {
-                expression { env.BRANCH_NAME == 'master' }
+                expression { env.BRANCH_NAME == env.DEPLOY_BRANCH }
             }
             steps {
                 script {
