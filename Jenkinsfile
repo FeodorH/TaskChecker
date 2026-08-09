@@ -5,13 +5,21 @@ pipeline {
             REGISTRY = 'docker.io'
             IMAGE = 'feodorh/taskchecker'
             LATEST_TAG = 'latest'
-            version = '0.0.0'
         }
 
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
+            }
+        }
+
+        stage('Debug') {
+            steps {
+                sh 'pwd'
+                sh 'cat gradle.properties || echo "gradle.properties not found"'
+                sh './gradlew -q printVersion || echo "printVersion task not found"'
+                sh './gradlew properties | grep version'
             }
         }
 
