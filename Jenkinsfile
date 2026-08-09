@@ -49,7 +49,7 @@ pipeline {
             }
             steps {
                 script{
-                    env.DOCKER_TAG = env.BRANCH_NAME + ":" + env.VERSION + "-dck"
+                    env.DOCKER_TAG = env.BRANCH_NAME + "-" + env.VERSION + "-dck"
                 }
                 withCredentials([usernamePassword(
                     credentialsId: 'docker-hub-credentials',
