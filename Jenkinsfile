@@ -74,8 +74,6 @@ pipeline {
                             echo "Tagging and pushing latest"
                             docker tag ${REGISTRY}/${IMAGE}:${env.DOCKER_TAG} ${REGISTRY}/${IMAGE}:${LATEST_TAG}
                             docker push ${REGISTRY}/${IMAGE}:${LATEST_TAG}
-                        else
-                            echo "Branch is not master, skipping latest push"
                         fi
                     """
                 }
