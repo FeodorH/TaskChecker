@@ -78,12 +78,32 @@ pipeline {
             }
         }
 
-//         stage('Deploy') {
-//             when {
-//                 expression { env.BRANCH_NAME == 'master' }
-//             }
-//              //TODO: релиз здесь
-//         }
+        stage('Deploy') {
+            when {
+                expression { env.BRANCH_NAME == 'master' }
+            }
+            steps {
+                script {
+                    def containerName = 'taskchecker-main'
+                    def hostPort = 8080
+                    def containerPort = 8080
+
+                    sh """
+                        docker pull ${REGISTRY}/${IMAGE}:${env.LATEST_TAG}
+                        docker stop ${containerName} || true
+                        docker rm ${containerName} || true
+                        docker run -d \\
+                            --name ${containerName} \\
+                            -p ${hostPort}:${containerPort} \\
+                            -e JAVA_OPTS='-Xmx512m' \\
+                            --restart unless-stopped \\
+                            ${REGISTRY}/${IMAGE}:${env.LATEST_TAG}
+                        sleep 5
+                        docker ps | grep ${containerName} || (echo "Container failed to start" && exit 1)
+                    """
+                }
+            }
+        }
 
     }
 
