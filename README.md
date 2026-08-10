@@ -137,6 +137,63 @@
 
 ---
 
+## 🖥️ Использование приложения
+### Как готовый продукт
+Для прод версии у вас должен быть postgre SQL(!)
+
+С публичного докерхаба feodorh/taskchecker
+выбриаете latest образ или любую другую версию и запускаете:
+
+**Важно**: Для prod режима **необходимо**, чтобы PostgreSQL был запущен на хосте
+и доступен по адресу localhost:5432. Если вы используете другой хост/порт, измените DB_URL в команде.\
+Если порт 8080 занят, измените -p 8081:8080 или другой порт
+#### Prod: 
+```shell
+docker run -d   \
+    --name taskchecker-main \
+    -p 8080:8080 \
+    -e SPRING_PROFILES_ACTIVE=prod \
+    -e DB_URL=jdbc:postgresql://host.docker.internal:5432/taskdb \
+    -e DB_USER=postgres \
+    -e DB_PASSWORD=password \
+    --restart unless-stopped \
+    docker.io/feodorh/taskchecker:latest
+```
+#### Dev:
+```shell
+docker run -d   \
+--name taskchecker-main \
+-p 8080:8080 \
+-e SPRING_PROFILES_ACTIVE=dev \
+-e DB_URL=jdbc:h2:mem:testdb \
+--restart unless-stopped \
+docker.io/feodorh/taskchecker:latest
+```
+
+### Для последующей разработки
+Для локальной разработки и отладки с полным окружением (PostgreSQL + приложение) используйте Docker Compose.
+
+**Важно:** Для CI/CD каждый разработчик использует **свой собственный Jenkins-сервер** (локально или на VPS). Данный Compose-файл не включает Jenkins, так как он не требуется для локального запуска приложения.
+
+Выполните этапы:
+#### 1. Клонируйте репозиторий
+
+```bash
+git clone https://github.com/FeodorH/TaskChecker.git
+cd ./TaskChecker
+```
+
+#### 2.Запустите Docker Compose
+```shell
+docker-compose up -d
+```
+
+После этого:\
+Приложение будет доступно по адресу http://localhost:8080.\
+PostgreSQL будет работать в отдельном контейнере и автоматически инициализируется с базой taskdb.
+
+---
+
 ## 🔐 Аутентификация
 ### API защищён с помощью Basic Authentication (Spring Security).
 
@@ -153,7 +210,7 @@
 /actuator/info - Информация о приложении\
 /actuator/metrics - Метрики (память, процессор, запросы)\
 
-## 🖥️ H2 Console
+## 💻 H2 Console
 ### Для просмотра базы данных в реальном времени используй H2 Console:
 
 ```text
@@ -190,7 +247,9 @@ Password: (оставить пустым)\
 ✅ Мониторинг через Actuator\
 ✅ Юнит- и интеграционные тесты\
 ✅ AOP-logging\
-✅ Централизованная обработка исключений(AOP)
+✅ Централизованная обработка исключений(AOP)\
+✅ Полноценная сборка через Jenkins\
+✅ Результат - docker контейнер соответствующей версии
 
 ## 🧠 Чему научился в этом проекте
 #### Создание REST API на Kotlin + Spring Boot 3
@@ -205,6 +264,8 @@ Password: (оставить пустым)\
 #### Настройка мониторинга через Actuator
 #### Написание unit тестов для всех слоёв
 #### Работа с парадигмой AOP
+#### Создание и развертывание пайплайнов в Jenkins
+#### Работа с docker и docker compose
 
 ---
 
