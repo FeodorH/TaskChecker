@@ -5,15 +5,9 @@ spring:
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:password}
 
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:schema.sql
-
   jpa:
-    defer-datasource-initialization: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: false
     open-in-view: false
 
