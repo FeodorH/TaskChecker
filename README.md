@@ -137,6 +137,46 @@
 
 ---
 
+## 🖥️ Использование приложения
+### Как готовый продукт
+Для прод версии у вас должен быть postgre SQL(!)
+
+С публичного докерхаба feodorh/taskchecker
+выбриаете latest образ или любую другую версию и запускаете:
+
+**Важно**: Для prod режима необходимо, чтобы PostgreSQL был запущен на хосте
+и доступен по адресу localhost:5432. Если вы используете другой хост/порт, измените DB_URL в команде.\
+Если порт 8080 занят, измените -p 8081:8080 или другой порт\
+#### Prod: 
+```shell
+docker run -d   \
+    --name taskchecker-main \
+    -p 8080:8080 \
+    -e SPRING_PROFILES_ACTIVE=prod \
+    -e DB_URL=jdbc:postgresql://host.docker.internal:5432/taskdb \
+    -e DB_USER=postgres \
+    -e DB_PASSWORD=password \
+    --restart unless-stopped \
+    docker.io/feodorh/taskchecker:latest
+```
+#### Dev:
+```shell
+docker run -d   \
+--name taskchecker-main \
+-p 8080:8080 \
+-e SPRING_PROFILES_ACTIVE=dev \
+-e DB_URL=jdbc:h2:mem:testdb \
+--restart unless-stopped \
+docker.io/feodorh/taskchecker:latest
+```
+
+### Для последующей разработки
+Для локальной разработки и отладки с полным окружением (PostgreSQL + приложение) используйте Docker Compose.
+
+**Важно**: используйте свой собственный jenkins-сервер \
+
+//docker-compose here
+
 ## 🔐 Аутентификация
 ### API защищён с помощью Basic Authentication (Spring Security).
 
@@ -153,7 +193,7 @@
 /actuator/info - Информация о приложении\
 /actuator/metrics - Метрики (память, процессор, запросы)\
 
-## 🖥️ H2 Console
+## 💻 H2 Console
 ### Для просмотра базы данных в реальном времени используй H2 Console:
 
 ```text
