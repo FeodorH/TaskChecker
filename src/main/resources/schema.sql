@@ -1,0 +1,17 @@
+CREATE TABLE IF NOT EXISTS theme (
+    id SERIAL PRIMARY KEY,
+    theme_title VARCHAR(50) NOT NULL UNIQUE,
+    description TEXT,
+    update_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS tasks (
+    id SERIAL PRIMARY KEY,
+    theme_id INTEGER NOT NULL,
+    title VARCHAR(50) NOT NULL,
+    author VARCHAR(50),
+    description TEXT,
+    is_started BOOLEAN NOT NULL DEFAULT FALSE,
+    update_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_tasks_theme FOREIGN KEY (theme_id) REFERENCES theme(id) ON DELETE RESTRICT
+);
