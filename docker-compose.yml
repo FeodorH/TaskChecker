@@ -29,6 +29,7 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/taskdb
       DB_USER: postgres
       DB_PASSWORD: password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
     depends_on:
       postgres:
         condition: service_healthy
