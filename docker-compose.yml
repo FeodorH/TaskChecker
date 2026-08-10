@@ -21,7 +21,7 @@ services:
 
   app:
     image: feodorh/taskchecker:latest
-    container_name: taskchecker-main-test
+    container_name: taskchecker-main
     ports:
       - "8080:8080"
     environment:
