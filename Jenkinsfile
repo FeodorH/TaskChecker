@@ -34,15 +34,6 @@ pipeline {
             }
         }
 
-        stage('Debug') {
-            steps {
-                sh 'pwd'
-                sh 'cat gradle.properties || echo "gradle.properties not found"'
-                sh './gradlew -q printVersion || echo "printVersion task not found"'
-                sh './gradlew properties | grep version'
-            }
-        }
-
         stage('SetVersion') {
             steps {
                 script {
